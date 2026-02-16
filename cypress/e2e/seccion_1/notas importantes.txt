@@ -1,0 +1,291 @@
+----------------------------------------------------------WINDOWS_REFERENCES--------------------------------------------------------------------------------------------------
++ cy.document().should("have.property", "charset").and('eq', 'UTF-8') --> Para comprobar si una página está en utf-8
+
++ cy.url().should("include", "random-number.html") --> "random-number.html" se refiere a un TROZO de una dirreción URL. Esta sentencia comprueba la url dado un trozo
++ cy.url().should("eq", "https://google.com") --> Comprueba una dirección URL comprobando que esa es EXACTAMENTE la dirección
+----------------------------------------------------------CYPRESS_JSON--------------------------------------------------------------------------------------------------------
++ En cypress.json:
+
+{
+    "viewportWidth": 1500
+    "viewportHeight": 900
+    "chromeWebSecurity": false
+}
+------------------------------------------------------------CONSOLA-----------------------------------------------------------------------------------------------------------
++ node_modules\.bin\cypress run --> Corre por consola todos los tests que tengamos. Muestra si se pasan o se fallan y alguna info mas
++ npx cypress run --headed --> esta vez se correrán tambien todos los tests pero desde la aplicación web de cypress
++ npx cypress run --browser chrome --> Lo mismo, se correrán todos pero definiendo Chrome como navegador
++ npx cypress run --spec "cypress\e2e\seccion_1\Primer_Reto.cy.js" --> Correrá desde la consola un test en especifico
++ npx cypress run --spec "cypress\e2e\seccion_1\*" --> Lanza todos los tests de la seccion 1
+------------------------------------------------------------CARGAR ARCHIVOS UPLOAD-FILE---------------------------------------------------------------------------------------
++ import 'cypress-file-upload'
+
++ Meter la imagen que deseemos en la carpeta cypress\fixtures
+
+const ruta = 'img1.jpg'
+cy.get('[type="file"]').attachFile(ruta)
+---------------------------------------------------------------------MOUSE----------------------------------------------------------------------------------------------------
++ Drag and Drop 1:
+    require('@4tw/cypress-drag-drop')
+    cy.get("#column-a").drag("#column-b",{force:true}) --> se puede probar sin el force, pero si no funciona probar a ponerlo.
+
++ Mouse-over:
+    cy.contains("Selenium").trigger('mouseover')
+    cy.contains("Selenium Python Video Tutorials").invoke("removeAttr", "target").click() --> Cuando al clickar en un elemento te redirecciona a otra ventana aparte, 
+                                                                                              Cypress no lo soporta, asi que la solucion es usar un invoke y borrar el  
+                                                                                              atributo target que es el que hace que te redireccione y así te abre la 
+                                                                                              página en la misma página
+
++ Slider:
+    cy.get("#slider1 > .range > input").invoke("attr", "value", "90") --> Modificas el valor del atributo valor a 90
+    cy.get("#slider3 > .range > input").invoke("attr", "value", "90") --> Modificas el valor del atributo valor a 90
+    cy.get("#slider5 > .range > input").invoke("attr", "value", "90") --> Modificas el valor del atributo valor a 90
+---------------------------------------------------------------------FECHA----------------------------------------------------------------------------------------------------
++ Ejemplo 1:
+    cy.get("#idCampoFecha").should(be.visible).click()
+    cy.get(".today").first().click({force:true})
+
+Ejemplo 2:
+    cy.get("[placeholder='Start Date']").should("be.visible").type("25/03/2003 {esc}")
+    cy.get("[placeholder='End Date']").should("be.visible").type("25/12/2003 {esc}")
+
+Ejemplo 3:
+    cy.get("[placeholder='Start Date']").should("be.visible").type("25/03/2003 {esc}").tab().type("25/12/2003 {esc}")
+---------------------------------------------------------------FOR AND FOREACH LOOPS-------------------------------------------------------------------------------------------
++ Ejemplo 1:
+    cy.get(".product-name").each(($el,index,$list)=>{
+        //cy.log($el.text())
+
+        let vestido = $el.text()
+        cy.log(vestido)
+    })
+
++ Ejemplo 2:
+    cy.get(".product-name").each(($el,index,$list)=>{
+        let vestido = $el.text()
+        if(vestido.includes("Blouse")){
+            cy.wrap($el).click()
+        }
+    })
+
++ Ejemplo 3:
+    const datos=[]
+    cy.get("#center_column .product-name").each(($el,index,$list)=>{
+        datos[index] = $el.text()
+    }).then(()=>{
+        
+        for(let x=0; x<=datos.length; x++){
+            cy.get("#center_column .product-name").eq(x).click({force:true})
+            cy.get(#quantity_wanted).should("be.visible").clear().type("4")
+            cy.get("#uniform-group-1").select("M").should("have.value", "2")
+            cy.get(".exclusive > span").should("be.visible").click({force:true}) 
+            cy.xpath("//span[contains(.,'Proceed to checkout')]").click({force:true})
+            cy.get(".icon-home").should("be.visible").click({force:true})
+        }
+    })
+--------------------------------------------------------------------TABLAS------------------------------------------------------------------------------------------------------
++ Ejemplo 1 - Child:
+    cy.get(".btn-group").children(".btn-success")
+    cy.get(".btn-group").children(".btn-success").should("contain", "Green").click({force:true})
+    cy.get(".btn-group").children(".btn-danger").should("contain", "Red").click({force:true})
+
++ Ejemplo 2 - EQ:
+    cy.get("[type='button']").eq(2).should("contain","Orange").click({force:true})
+    cy.get("[type='button']").eq(4).should("contain","All").click({force:true})
+
++ Ejemplo 3 - Filter:
+    cy.get("[type='button']").filter('.btn-warning').should("contain", "Orange").click()
+
++ Ejemplo 4 - Find:
+    cy.get(".btn-group").find(".btn-danger").should("contain","Red").click()
+
++ Ejemplo 5 - First y Last:
+    cy.get(".btn-group").find("button").first().should("contain","Green").click({force:true})
+    cy.get(".btn-group").find("button").last().should("contain","Green").click({force:true})
+
++ Ejemplo 6 - NextAll:
+    cy.get("[type='button']").should("contain", "Green")
+    cy.get("[type='button']").should("contain", "Green").nextAll().should("have.length",4)
+
++ Ejemplo 7 - Seleccionar al elemento padre con Parent:   
+    cy.get("[type='button']").parent().should("have.class", "btn-group")
+
++ Ejemplo 8 - Reto tablas:
+    cy.get("[type='button']").eq(4).should("contain", "All").click({force:true})
+    cy.get("[type='checkbox']").check({force:true})
+
++ Ejemplo 9 - Mismo reto pero con bucle for:
+    for(let x=1; x<=4;x++){
+        let nombreBoton = ""
+
+        if(x==1){
+            nombreBoton="Green"
+        }
+        else if(x==2){
+            nombreBoton="Orange"
+        }
+        else if(x==3){
+            nombreBoton="Red"
+        } else{
+            nombreBoton="All"
+        }
+
+        cy.get("[type='button']").eq(x).should("contain",nombreBoton).click({force:true})
+        cy.get("[type='checkbox']").check({force:true})
+    }
+
++ Ejemplo 10 - Reto 2 tablas:
+    const datos=[]
+    
+    cy.get(".odd td").each(($el,index,$list){
+        datos[index] = $el.text()
+    }).then(()=>{
+        for(let i=0;i<datos.length;i++){
+            cy.log(datos[i])
+        }
+    })
+
++ Ejemplo 10.1 - Reto 2 + sumar los campos con la clase .odd
+    const datos=[]
+    let cantidadOdd = 0
+    
+    cy.get("[role='row']" td).each(($el,index,$list){
+        datos[index] = $el.text()
+    }).then(()=>{
+        for(let i=0;i<datos.length;i++){
+            if(Number(datos[i])){
+                cantidadOdd+=Number(datos[i])
+            }
+        }
+        cy.log("La cantidad total es: "+cantidadOdd)
+        expect(cantidadOdd).eq(202)
+    })
+
++ Ejemplo 10.2 - Valor de un campo en específico
+    const campo = cy.get("tbody > :nth-child(7) > :nth-child(2)")
+    campo.each(($el,index,$list)=>{
+        const dato=$el.text()
+        cy.log(dato)
+
+        if(dato.includes("Javascript Developer")){
+            campo.eq(index).next().next().then((age)=>{
+                const Edad=age.text()
+                cy.log(Edad)
+                cy.log("La edad del Javascript Developer es: "+Edad)
+                expect(Edad).to.equal('39')
+            })
+        }
+    })
+--------------------------------------------------------------------ALERTS------------------------------------------------------------------------------------------------------
++ Ejemplo 1:
+    cy.xpath("xpath_ejemplo").click()
+    cy.xpath("xpath_modal").click({force:true})
+--------------------------------------------------------------------ALIAS-------------------------------------------------------------------------------------------------------
++ Ejemplo 1:  
+    cy.get("#firstName").should("be.visible").as("nom")
+    cy.get("@nom").type("Pedro")
+    
+    cy.get("#surname").should("be.visible").as("ap")
+    cy.get("@ap").type("Ruiz")
+
+    cy.get("#age").should("be.visible").as("edad")
+    cy.get("@edad").type("22")
+
+    cy.get("#country").should("be.visible").as("pais")
+    cy.get("@pais").select("España").should("have.value", "España") //select porque es un combo box y lo validamos con assert
+
+    cy.get("#notes").should("be.visible").as("notas")
+    cy.get("@notas").type("Demo del contenido")
+
+    cy.get("#idBotonAceptar").click({force:true})
+--------------------------------------------------------------------INVOKE------------------------------------------------------------------------------------------------------
++ Ejemplo 1 - Invoke text:
+    cy.get(".page-body > :nth-child(5)").invoke("text").as("info") //Con invoke cogemos el texto, le damos un alias
+    cy.get("@info").should("contain", "Demo de texto") // Y comprobamos ese texto usando el alias con un assert
+    
+    cy.xpath("XPath_ejemplo").invoke("text").as("title_name")
+    cy.get("@title_name").should("contain", "First name").then(()=>{
+        cy.get("#firstName").type("Alejandro")
+    })
+
++ Ejemplo 2 - Invoke estilos:
+    cy.get("#id").invoke("attr", "style", "color:Blue; font-size: 50px")
+
++ Ejemplo 3 - Invoke ocultar y mostrar:
+    cy.get("#id_text").invoke("hide")
+    cy.get("#id_textBox").invoke("hide")
+
+    cy.get("#id_text").invoke("show", "3s")
+    cy.get("#id_textBox").invoke("show", "4s")
+
++ Ejemplo 4 -  RETO INVOKE ocultar y mostrar
+    cy.get("#id_text_title_surname").invoke("hide")
+    cy.get("#id_textBox_surname").invoke("hide")
+
+    cy.get("#id_textBox_name").should("be.visible").type("Alejandro").then(()=>{
+        cy.get("#id_text_title_surname").invoke("show", "3s")
+        cy.get("#id_textBox_surname").invoke("show", "4s")
+        cy.get("#id_textBox_surname").type("Gijon")
+    })
+
++ Ejemplo 5 - Invoke src:
+    cy.xpath("xpath_ejemplo").invoke("attr", "src").should("include", "sponsored-by-CBT.png")
+
++ Ejemplo 6 - Invoke target_blank:
+    cy.xpath("xpath_ejemplo_link").invoke("removeAttr", "target").click({force:true})
+--------------------------------------------------------------------SNIPPETS----------------------------------------------------------------------------------------------------
++ Ejemplo 1 - Configuracion y uso de los snippets
+    Útiles, si luego los necesito configurar
+--------------------------------------------------------------------NAVEGACIÓN--------------------------------------------------------------------------------------------------
++ Ejemplo 1 - Back y forward:
+    cy.go("back")
+    cy.go("forward")
+
++ Ejemplo 1 - Refresh de la página (como F5):
+    cy.reload() 
+------------------------------------------------------------------------HOOKS----------------------------------------------------------------------------------------------------
++ Ejemplo 1 - Intro: 
+    before(()=>{
+
+    })
+
+    beforeEach(()=>{
+        
+    })
+
+    afterEach(()=>{
+        
+    })
+
+    after(()=>{
+        
+    })
+
++ Ejemplo 2 - Aplicación de Hook:
+    before(()=>{
+        let tiempo = 1000
+        cy.visit('url')
+        cy.title().should('eq','titulo')
+        cy.wait(tiempo)
+    })
+--------------------------------------------------------------------------CUSTOM-------------------------------------------------------------------------------------------------
+Importante creo, revisar curso - seccion 35 (es basicamente hacer funciones)
+-------------------------------------------------------------------------PAGE_OBJECTS--------------------------------------------------------------------------------------------
+Importante, revisar seccion 36 (es basicamente hacer clases)
+-------------------------------------------------------------------------TIEMPO--------------------------------------------------------------------------------------------
++ En cypress.json pageLoadTimeout puedes cambiar el tiempo de timeout de cargar una pagina
+
++ defaultCommandTimeout
+
++ {timeout:5000} en los asserts
+------------------------------------------------------------------VIDEO y SCREENSHOT-------------------------------------------------------------------------------------------
++ npx cypress run --spec "cypress\integration\seccion_6\pageObject.js"  --> esto hace que empiece a grabar, porque lleva el RUN. Con OPEN no graba
++ Para hacer screenshot es igual que con el video, ejecutando run hará screenshot, pero habra que poner cy.screenshot() en el codigo donde queramos que la haga
+-------------------------------------------------------------------------FIXTURE------------------------------------------------------------------------------------------------
+fixtures\example.json --> Sirve para cargar datos de JSON en nuestras pruebas
+Mockaroo --> Generar archivos JSON con información deseada. Das los parámetros y lso rellena solos con tantas filas como queramos 
+Fixture desde un archivo excel --> beautifultools es una pagina que me genera un JSON a partir de un excel dado 
+-------------------------------------------------------------------------CUCUMBER------------------------------------------------------------------------------------------------
+
+
+
