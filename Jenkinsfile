@@ -1,7 +1,7 @@
     pipeline {
         agent any
      
-        tools {nodejs "node"}
+        tools {nodejs "Node"}
      
         stages {
      
@@ -15,7 +15,7 @@
                             git url: 'https://github.com/agijons/repo_curso.git'
                             bat 'npm install'
                             bat 'npm ci'
-                            bat 'npx cypress run'                       
+                            bat 'npx cypress run --spec "cypress/e2e/cucumber1/**/*"'                       
                         
                         }
                     }
@@ -28,7 +28,7 @@
                             git url: 'https://github.com/agijons/repo_curso.git'
                             bat 'npm install'
                             bat 'npm ci'
-                            bat 'npx cypress run'                       
+                            bat 'npx cypress run --spec "cypress/e2e/seccion_1/**/*"'                      
                         
                         }
                     }
